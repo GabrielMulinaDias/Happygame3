@@ -1,0 +1,101 @@
+[
+  {
+    "pergunta": "Quanto é 8 x 7?",
+    "respostas": [
+      "54",
+      "56",
+      "58",
+      "64"
+    ],
+    "correta": 1,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Quanto é 25% de 200?",
+    "respostas": [
+      "25",
+      "40",
+      "50",
+      "100"
+    ],
+    "correta": 2,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Quanto é 15 + 18?",
+    "respostas": [
+      "31",
+      "32",
+      "33",
+      "34"
+    ],
+    "correta": 2,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual é a raiz quadrada de 81?",
+    "respostas": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "correta": 2,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Se x + 5 = 12, quanto vale x?",
+    "respostas": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "correta": 2,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Quanto é 12 x 12?",
+    "respostas": [
+      "124",
+      "132",
+      "144",
+      "156"
+    ],
+    "correta": 2,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Na função f(x) = 2x + 3, quanto é f(4)?",
+    "respostas": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "correta": 3,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual é o valor de 3² + 4²?",
+    "respostas": [
+      "12",
+      "18",
+      "25",
+      "49"
+    ],
+    "correta": 2,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Se 5x = 45, quanto vale x?",
+    "respostas": [
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "correta": 2,
+    "dificuldade": "dificil"
+  }
+]

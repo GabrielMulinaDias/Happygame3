@@ -1,0 +1,101 @@
+[
+  {
+    "pergunta": "Quem chegou ao Brasil em 1500?",
+    "respostas": [
+      "Pedro Álvares Cabral",
+      "Dom Pedro I",
+      "Cristóvão Colombo",
+      "Tiradentes"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Em que ano o Brasil se tornou independente?",
+    "respostas": [
+      "1500",
+      "1822",
+      "1889",
+      "1930"
+    ],
+    "correta": 1,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual data marca a Independência do Brasil?",
+    "respostas": [
+      "7 de setembro",
+      "15 de novembro",
+      "21 de abril",
+      "25 de dezembro"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Quem proclamou a Independência do Brasil?",
+    "respostas": [
+      "Dom Pedro I",
+      "Getúlio Vargas",
+      "Tiradentes",
+      "Marechal Deodoro"
+    ],
+    "correta": 0,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Qual evento marcou o fim da monarquia no Brasil?",
+    "respostas": [
+      "Independência",
+      "Proclamação da República",
+      "Abolição da Escravidão",
+      "Revolução Industrial"
+    ],
+    "correta": 1,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "A Lei Áurea está relacionada a qual acontecimento?",
+    "respostas": [
+      "Fim da escravidão no Brasil",
+      "Independência do Brasil",
+      "Proclamação da República",
+      "Descobrimento do Brasil"
+    ],
+    "correta": 0,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Em que ano ocorreu a Proclamação da República no Brasil?",
+    "respostas": [
+      "1822",
+      "1888",
+      "1889",
+      "1932"
+    ],
+    "correta": 2,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Quem foi o primeiro presidente do Brasil?",
+    "respostas": [
+      "Dom Pedro II",
+      "Marechal Deodoro da Fonseca",
+      "Getúlio Vargas",
+      "Juscelino Kubitschek"
+    ],
+    "correta": 1,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual movimento teve Tiradentes como um dos principais nomes?",
+    "respostas": [
+      "Inconfidência Mineira",
+      "Revolução Farroupilha",
+      "Guerra de Canudos",
+      "Revolta da Vacina"
+    ],
+    "correta": 0,
+    "dificuldade": "dificil"
+  }
+]

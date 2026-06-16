@@ -1,0 +1,101 @@
+[
+  {
+    "pergunta": "Qual personagem é conhecido por usar boné vermelho e bigode?",
+    "respostas": [
+      "Sonic",
+      "Mario",
+      "Link",
+      "Pikachu"
+    ],
+    "correta": 1,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual jogo é famoso por blocos e construção?",
+    "respostas": [
+      "Minecraft",
+      "FIFA",
+      "The Sims",
+      "Valorant"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual personagem amarelo é famoso na franquia Pokémon?",
+    "respostas": [
+      "Pikachu",
+      "Mario",
+      "Sonic",
+      "Kirby"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual jogo possui um modo Battle Royale muito famoso?",
+    "respostas": [
+      "Roblox",
+      "Fortnite",
+      "Minecraft",
+      "The Sims"
+    ],
+    "correta": 1,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Em Pokémon, qual é o tipo principal do Pikachu?",
+    "respostas": [
+      "Fogo",
+      "Água",
+      "Elétrico",
+      "Planta"
+    ],
+    "correta": 2,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Qual destes jogos é conhecido por partidas de futebol?",
+    "respostas": [
+      "EA Sports FC",
+      "Minecraft",
+      "Among Us",
+      "Roblox"
+    ],
+    "correta": 0,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Qual empresa criou o console PlayStation?",
+    "respostas": [
+      "Microsoft",
+      "Nintendo",
+      "Sony",
+      "Sega"
+    ],
+    "correta": 2,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual jogo popularizou o gênero MOBA com partidas 5x5 competitivas?",
+    "respostas": [
+      "League of Legends",
+      "The Sims",
+      "Minecraft",
+      "Guitar Hero"
+    ],
+    "correta": 0,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual empresa é conhecida por criar Mario, Zelda e Pokémon em seus consoles?",
+    "respostas": [
+      "Nintendo",
+      "Sony",
+      "Microsoft",
+      "Valve"
+    ],
+    "correta": 0,
+    "dificuldade": "dificil"
+  }
+]

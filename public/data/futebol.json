@@ -1,0 +1,101 @@
+[
+  {
+    "pergunta": "Quantos jogadores entram em campo por time no futebol?",
+    "respostas": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "correta": 2,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Quantas Copas do Mundo o Brasil venceu?",
+    "respostas": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "correta": 2,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual objeto é usado para jogar futebol?",
+    "respostas": [
+      "Bola",
+      "Raquete",
+      "Taco",
+      "Rede"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Quem é conhecido como Rei do Futebol?",
+    "respostas": [
+      "Messi",
+      "Pelé",
+      "Neymar",
+      "Cristiano Ronaldo"
+    ],
+    "correta": 1,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Qual país venceu a Copa do Mundo de 2022?",
+    "respostas": [
+      "Brasil",
+      "França",
+      "Argentina",
+      "Alemanha"
+    ],
+    "correta": 2,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Em uma partida oficial, o goleiro pode usar as mãos em qual área?",
+    "respostas": [
+      "Em qualquer lugar do campo",
+      "Apenas dentro da própria área",
+      "Somente no meio-campo",
+      "Nunca pode usar as mãos"
+    ],
+    "correta": 1,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Qual seleção venceu a primeira Copa do Mundo, em 1930?",
+    "respostas": [
+      "Brasil",
+      "Uruguai",
+      "Itália",
+      "Argentina"
+    ],
+    "correta": 1,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual jogador marcou os dois gols do Brasil na final da Copa de 2002?",
+    "respostas": [
+      "Rivaldo",
+      "Ronaldinho",
+      "Ronaldo",
+      "Kaká"
+    ],
+    "correta": 2,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual clube brasileiro é conhecido como Peixe?",
+    "respostas": [
+      "Palmeiras",
+      "Santos",
+      "Flamengo",
+      "São Paulo"
+    ],
+    "correta": 1,
+    "dificuldade": "dificil"
+  }
+]

@@ -1,0 +1,101 @@
+[
+  {
+    "pergunta": "O que é uma variável?",
+    "respostas": [
+      "Um espaço para armazenar dados",
+      "Um navegador de internet",
+      "Uma imagem do sistema",
+      "Uma página pronta"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual linguagem é usada para estruturar páginas web?",
+    "respostas": [
+      "HTML",
+      "Excel",
+      "Photoshop",
+      "Windows"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual linguagem é muito usada para deixar sites interativos?",
+    "respostas": [
+      "JavaScript",
+      "Word",
+      "Paint",
+      "PowerPoint"
+    ],
+    "correta": 0,
+    "dificuldade": "facil"
+  },
+  {
+    "pergunta": "Qual estrutura é usada para repetir comandos?",
+    "respostas": [
+      "if",
+      "for",
+      "alert",
+      "return"
+    ],
+    "correta": 1,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "O que é uma função em programação?",
+    "respostas": [
+      "Um bloco de código reutilizável",
+      "Um erro do computador",
+      "Uma imagem salva",
+      "Um tipo de monitor"
+    ],
+    "correta": 0,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Para que serve o comando if?",
+    "respostas": [
+      "Criar uma condição",
+      "Trocar a cor do monitor",
+      "Salvar uma imagem",
+      "Desligar o navegador"
+    ],
+    "correta": 0,
+    "dificuldade": "medio"
+  },
+  {
+    "pergunta": "Em JavaScript, qual método transforma um JSON em objeto?",
+    "respostas": [
+      "JSON.parse()",
+      "JSON.stringify()",
+      "parseInt()",
+      "console.log()"
+    ],
+    "correta": 0,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual hook do React é usado para controlar estado?",
+    "respostas": [
+      "useState",
+      "useEffect",
+      "useRouter",
+      "useClass"
+    ],
+    "correta": 0,
+    "dificuldade": "dificil"
+  },
+  {
+    "pergunta": "Qual hook do React pode ser usado para executar ações ao carregar dados?",
+    "respostas": [
+      "useEffect",
+      "useState",
+      "useStyle",
+      "useHTML"
+    ],
+    "correta": 0,
+    "dificuldade": "dificil"
+  }
+]
