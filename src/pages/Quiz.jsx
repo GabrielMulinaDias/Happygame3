@@ -30,16 +30,33 @@ function Quiz() {
   const [carregando, setCarregando] = useState(false);
   const [quizJaConcluido, setQuizJaConcluido] = useState(false);
 
+  const perfilSalvo = localStorage.getItem("perfilHappyGame");
+
+  const perfil = perfilSalvo
+    ? JSON.parse(perfilSalvo)
+    : {
+        id: "visitante",
+        nome: "Jogador",
+      };
+
+  const usuarioId = perfil.id || "visitante";
+
   useEffect(() => {
     carregarPerguntas();
-  }, [tema, dificuldade]);
+  }, [tema, dificuldade, usuarioId]);
+
+  function criarChaveStorage(nomeChave) {
+    return `${nomeChave}_${usuarioId}`;
+  }
 
   function chaveQuizAtual() {
     return `${tema}-${dificuldade}`;
   }
 
   function obterQuizzesConcluidos() {
-    const dadosSalvos = localStorage.getItem("quizzesConcluidosHappyGame");
+    const dadosSalvos = localStorage.getItem(
+      criarChaveStorage("quizzesConcluidosHappyGame")
+    );
 
     if (!dadosSalvos) {
       return [];
@@ -56,7 +73,7 @@ function Quiz() {
       const novaLista = [...concluidos, chaveAtual];
 
       localStorage.setItem(
-        "quizzesConcluidosHappyGame",
+        criarChaveStorage("quizzesConcluidosHappyGame"),
         JSON.stringify(novaLista)
       );
     }
@@ -85,7 +102,7 @@ function Quiz() {
       );
 
       const concluidos = obterQuizzesConcluidos();
-      const jaFoiConcluido = concluidos.includes(`${tema}-${dificuldade}`);
+      const jaFoiConcluido = concluidos.includes(chaveQuizAtual());
 
       setPerguntas(perguntasAleatorias);
       setPerguntaAtual(0);
@@ -104,7 +121,7 @@ function Quiz() {
 
   function iniciarQuiz() {
     if (quizJaConcluido) {
-      alert("Você já concluiu esse quiz. Escolha outro tema ou dificuldade.");
+      alert("Você já concluiu esse tema nessa dificuldade.");
       return;
     }
 
@@ -124,13 +141,10 @@ function Quiz() {
     setRespostaSelecionada(indice);
 
     const pergunta = perguntas[perguntaAtual];
-
     const acertou = indice === pergunta.correta;
-
     const pontosDaQuestao = dificuldades[dificuldade].pontos;
 
     const novaPontuacao = pontuacao + (acertou ? pontosDaQuestao : 0);
-
     const novosAcertos = acertos + (acertou ? 1 : 0);
 
     if (acertou) {
@@ -154,17 +168,31 @@ function Quiz() {
 
     if (!concluidos.includes(chaveAtual)) {
       const pontuacaoTotalAtual =
-        Number(localStorage.getItem("pontuacaoTotalHappyGame")) || 0;
+        Number(
+          localStorage.getItem(
+            criarChaveStorage("pontuacaoTotalHappyGame")
+          )
+        ) || 0;
 
       const novaPontuacaoTotal = pontuacaoTotalAtual + pontosFinais;
 
-      localStorage.setItem("pontuacaoTotalHappyGame", novaPontuacaoTotal);
+      localStorage.setItem(
+        criarChaveStorage("pontuacaoTotalHappyGame"),
+        novaPontuacaoTotal
+      );
 
       const melhorPontuacaoQuiz =
-        Number(localStorage.getItem("melhorPontuacao")) || 0;
+        Number(
+          localStorage.getItem(
+            criarChaveStorage("melhorPontuacao")
+          )
+        ) || 0;
 
       if (pontosFinais > melhorPontuacaoQuiz) {
-        localStorage.setItem("melhorPontuacao", pontosFinais);
+        localStorage.setItem(
+          criarChaveStorage("melhorPontuacao"),
+          pontosFinais
+        );
       }
 
       marcarQuizComoConcluido();
@@ -179,7 +207,10 @@ function Quiz() {
       data: new Date().toLocaleDateString("pt-BR"),
     };
 
-    localStorage.setItem("ultimoQuizHappyGame", JSON.stringify(resumo));
+    localStorage.setItem(
+      criarChaveStorage("ultimoQuizHappyGame"),
+      JSON.stringify(resumo)
+    );
 
     setPontuacao(pontosFinais);
     setAcertos(acertosFinais);
@@ -197,7 +228,7 @@ function Quiz() {
       return "Bom resultado! Continue praticando para subir no ranking.";
     }
 
-    return "Continue tentando. Cada quiz aumenta sua experiência.";
+    return "Continue tentando. Cada quiz ajuda na sua evolução.";
   }
 
   function nomeTemaAtual() {
@@ -220,13 +251,15 @@ function Quiz() {
   const pergunta = perguntas[perguntaAtual];
 
   const pontuacaoTotal =
-    Number(localStorage.getItem("pontuacaoTotalHappyGame")) || 0;
+    Number(
+      localStorage.getItem(
+        criarChaveStorage("pontuacaoTotalHappyGame")
+      )
+    ) || 0;
 
   return (
     <div className="min-h-screen bg-slate-900 text-white px-6 py-10">
-
       <div className="max-w-4xl mx-auto">
-
         <h1 className="text-5xl font-bold text-cyan-400 text-center">
           Quiz Happy Game
         </h1>
@@ -237,11 +270,8 @@ function Quiz() {
 
         {!quizIniciado && (
           <div className="bg-slate-800 rounded-2xl p-8 mt-10 shadow-lg">
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
               <div>
-
                 <label className="block mb-3 font-semibold">
                   Escolha o tipo de quiz:
                 </label>
@@ -258,11 +288,9 @@ function Quiz() {
                   <option value="historia">História</option>
                   <option value="games">Games</option>
                 </select>
-
               </div>
 
               <div>
-
                 <label className="block mb-3 font-semibold">
                   Escolha a dificuldade:
                 </label>
@@ -277,21 +305,17 @@ function Quiz() {
                   <option value="medio">Médio - 20 pontos por acerto</option>
                   <option value="dificil">Difícil - 35 pontos por acerto</option>
                 </select>
-
               </div>
-
             </div>
 
             <div className="bg-slate-700 rounded-xl p-4 mt-6 text-center">
-
               <p className="text-slate-300">
-                Pontuação total acumulada:
+                Pontuação total acumulada de {perfil.nome}:
               </p>
 
               <p className="text-3xl font-bold text-cyan-400 mt-2">
                 {pontuacaoTotal} pts
               </p>
-
             </div>
 
             <div
@@ -303,14 +327,13 @@ function Quiz() {
             >
               {quizJaConcluido ? (
                 <p>
-                  Você já concluiu o quiz de {nomeTemaAtual()} no nível{" "}
-                  {dificuldades[dificuldade].nome}. Escolha outro tema ou
-                  dificuldade para pontuar novamente.
+                  {perfil.nome}, você já concluiu {nomeTemaAtual()} no nível{" "}
+                  {dificuldades[dificuldade].nome}. Escolha outro tema ou outra
+                  dificuldade.
                 </p>
               ) : (
                 <p>
-                  Este desafio ainda está disponível. As perguntas serão
-                  sorteadas automaticamente.
+                  Este desafio ainda está disponível para {perfil.nome}.
                 </p>
               )}
             </div>
@@ -328,17 +351,13 @@ function Quiz() {
                 {quizJaConcluido ? "Quiz já concluído" : "Começar Quiz"}
               </button>
             )}
-
           </div>
         )}
 
         {quizIniciado && !finalizado && pergunta && (
           <div className="bg-slate-800 rounded-2xl p-8 mt-10 shadow-lg">
-
             <div className="mb-6">
-
               <div className="flex justify-between text-sm text-slate-400">
-
                 <p>
                   Pergunta {perguntaAtual + 1} de {perguntas.length}
                 </p>
@@ -346,18 +365,14 @@ function Quiz() {
                 <p>
                   Dificuldade: {dificuldades[dificuldade].nome}
                 </p>
-
               </div>
 
               <div className="w-full bg-slate-700 h-4 rounded-full mt-3">
-
                 <div
                   className="bg-cyan-400 h-4 rounded-full transition-all"
                   style={{ width: `${progresso}%` }}
                 ></div>
-
               </div>
-
             </div>
 
             <h2 className="text-2xl font-bold mb-6">
@@ -365,7 +380,6 @@ function Quiz() {
             </h2>
 
             <div className="space-y-4">
-
               {pergunta.respostas.map((resposta, indice) => {
                 let estilo =
                   "w-full text-left p-4 rounded-xl bg-slate-700 hover:bg-slate-600 transition";
@@ -391,11 +405,9 @@ function Quiz() {
                   </button>
                 );
               })}
-
             </div>
 
             <div className="flex justify-between mt-6 text-lg font-semibold">
-
               <p>
                 Pontuação do quiz: {pontuacao}
               </p>
@@ -403,15 +415,12 @@ function Quiz() {
               <p>
                 Acertos: {acertos}
               </p>
-
             </div>
-
           </div>
         )}
 
         {finalizado && (
           <div className="bg-slate-800 rounded-2xl p-8 mt-10 text-center shadow-lg">
-
             <h2 className="text-4xl font-bold text-cyan-400">
               Quiz Finalizado!
             </h2>
@@ -425,8 +434,7 @@ function Quiz() {
             </p>
 
             <p className="text-cyan-400 font-bold mt-4">
-              Seus pontos foram somados ao ranking e este desafio foi marcado
-              como concluído.
+              Os pontos foram somados somente para o perfil de {perfil.nome}.
             </p>
 
             <button
@@ -439,12 +447,9 @@ function Quiz() {
             >
               Escolher outro quiz
             </button>
-
           </div>
         )}
-
       </div>
-
     </div>
   );
 }

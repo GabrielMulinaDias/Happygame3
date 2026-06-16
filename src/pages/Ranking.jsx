@@ -6,6 +6,7 @@ function Ranking() {
   const perfil = perfilSalvo
     ? JSON.parse(perfilSalvo)
     : {
+        id: "visitante",
         nome: "Jogador",
         avatar: {
           emoji: "🎮",
@@ -14,14 +15,20 @@ function Ranking() {
         titulo: "Visitante",
       };
 
+  const usuarioId = perfil.id || "visitante";
+
+  function criarChaveStorage(nomeChave) {
+    return `${nomeChave}_${usuarioId}`;
+  }
+
   const pontuacaoTotal =
-    Number(localStorage.getItem("pontuacaoTotalHappyGame")) || 0;
+    Number(localStorage.getItem(criarChaveStorage("pontuacaoTotalHappyGame"))) || 0;
 
   const melhorPontuacaoQuiz =
-    Number(localStorage.getItem("melhorPontuacao")) || 0;
+    Number(localStorage.getItem(criarChaveStorage("melhorPontuacao"))) || 0;
 
   const ultimoQuizSalvo =
-    localStorage.getItem("ultimoQuizHappyGame");
+    localStorage.getItem(criarChaveStorage("ultimoQuizHappyGame"));
 
   const ultimoQuiz = ultimoQuizSalvo
     ? JSON.parse(ultimoQuizSalvo)
@@ -63,8 +70,8 @@ function Ranking() {
 
   const jogadorAtual = {
     nome: perfil.nome,
-    avatar: perfil.avatar.emoji,
-    titulo: perfil.titulo,
+    avatar: perfil.avatar?.emoji || "🎮",
+    titulo: perfil.titulo || "Jogador",
     pontos: pontuacaoTotal,
     tipo: "usuario",
   };
@@ -96,13 +103,32 @@ function Ranking() {
     );
   }
 
+  function formatarTema(tema) {
+    const nomes = {
+      programacao: "Tecnologia",
+      futebol: "Futebol",
+      matematica: "Matemática",
+      historia: "História",
+      games: "Games",
+    };
+
+    return nomes[tema] || tema;
+  }
+
+  function formatarDificuldade(dificuldade) {
+    const nomes = {
+      facil: "Fácil",
+      medio: "Médio",
+      dificil: "Difícil",
+    };
+
+    return nomes[dificuldade] || dificuldade;
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-white px-6 py-10">
-
       <div className="max-w-5xl mx-auto">
-
         <div className="mb-10 text-center">
-
           <h1 className="text-5xl font-bold text-cyan-400">
             Classificação Happy Game
           </h1>
@@ -110,13 +136,11 @@ function Ranking() {
           <p className="text-slate-300 mt-4">
             Some pontos em diferentes quizzes e tente chegar à segunda colocação.
           </p>
-
         </div>
 
         <div className="bg-slate-800 rounded-3xl p-8 shadow-xl mb-10 text-center">
-
           <div className="text-7xl">
-            {perfil.avatar.emoji}
+            {perfil.avatar?.emoji || "🎮"}
           </div>
 
           <h2 className="text-3xl font-bold mt-4">
@@ -124,7 +148,7 @@ function Ranking() {
           </h2>
 
           <p className="text-cyan-400 mt-2">
-            {perfil.titulo}
+            {perfil.titulo || "Jogador"}
           </p>
 
           <p className="text-slate-300 mt-4">
@@ -141,20 +165,19 @@ function Ranking() {
 
           {ultimoQuiz && (
             <p className="text-sm text-slate-400 mt-4">
-              Último quiz: {ultimoQuiz.tema} | Dificuldade: {ultimoQuiz.dificuldade} | Acertos: {ultimoQuiz.acertos}/{ultimoQuiz.totalPerguntas}
+              Último quiz: {formatarTema(ultimoQuiz.tema)} | Dificuldade:{" "}
+              {formatarDificuldade(ultimoQuiz.dificuldade)} | Acertos:{" "}
+              {ultimoQuiz.acertos}/{ultimoQuiz.totalPerguntas}
             </p>
           )}
-
         </div>
 
         <div className="bg-slate-800 rounded-3xl p-8 shadow-xl">
-
           <h2 className="text-3xl font-bold mb-6">
             Classificação Geral
           </h2>
 
           <div className="space-y-4">
-
             {rankingFinal.map((jogador, index) => (
               <div
                 key={index}
@@ -166,9 +189,7 @@ function Ranking() {
                     : "bg-slate-700 border-slate-600"
                 }`}
               >
-
                 <div className="flex items-center gap-5">
-
                   <span
                     className={`text-2xl font-bold ${
                       jogador.tipo === "boss"
@@ -184,7 +205,6 @@ function Ranking() {
                   </div>
 
                   <div>
-
                     <h3
                       className={`font-bold text-xl ${
                         jogador.tipo === "boss"
@@ -210,9 +230,7 @@ function Ranking() {
                         Seu perfil
                       </p>
                     )}
-
                   </div>
-
                 </div>
 
                 <p
@@ -224,28 +242,19 @@ function Ranking() {
                 >
                   {jogador.pontos} pontos
                 </p>
-
               </div>
             ))}
-
           </div>
-
         </div>
 
         <div className="text-center mt-10">
-
           <Link to="/quiz">
-
             <button className="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-xl font-bold">
               Jogar Quiz
             </button>
-
           </Link>
-
         </div>
-
       </div>
-
     </div>
   );
 }
