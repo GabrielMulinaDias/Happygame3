@@ -9,26 +9,29 @@ const avatares = [
 ];
 
 function Home() {
-  const [nome, setNome] = useState("");
-  const [avatarSelecionado, setAvatarSelecionado] = useState(avatares[0]);
-  const [perfilSalvo, setPerfilSalvo] = useState(null);
-
-  useEffect(() => {
-    const perfil = localStorage.getItem("perfilHappyGame");
-
-    if (perfil) {
+  // Initialize profile state from localStorage synchronously (lazy init)
+  const inicialPerfil = (() => {
+    try {
+      const perfil = localStorage.getItem("perfilHappyGame");
+      if (!perfil) return null;
       const perfilConvertido = JSON.parse(perfil);
-
-      if (!perfilConvertido.id) {
-        perfilConvertido.id = Date.now().toString();
-        localStorage.setItem("perfilHappyGame", JSON.stringify(perfilConvertido));
-      }
-
-      setPerfilSalvo(perfilConvertido);
-      setNome(perfilConvertido.nome);
-      setAvatarSelecionado(perfilConvertido.avatar);
+      return perfilConvertido;
+    } catch {
+      return null;
     }
-  }, []);
+  })();
+
+  const [nome, setNome] = useState(inicialPerfil?.nome || "");
+  const [avatarSelecionado, setAvatarSelecionado] = useState(inicialPerfil?.avatar || avatares[0]);
+  const [perfilSalvo, setPerfilSalvo] = useState(inicialPerfil);
+
+  // if profile exists in storage but lacks an id, add it to localStorage (no state update)
+  useEffect(() => {
+    if (perfilSalvo && !perfilSalvo.id) {
+      const atualizado = { ...perfilSalvo, id: Date.now().toString() };
+      localStorage.setItem("perfilHappyGame", JSON.stringify(atualizado));
+    }
+  }, [perfilSalvo]);
 
   function salvarPerfil() {
     if (nome.trim() === "") {

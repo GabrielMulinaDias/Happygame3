@@ -7,6 +7,7 @@ import Quiz from "./pages/Quiz";
 import Ranking from "./pages/Ranking";
 import IA from "./pages/IA";
 import Sobre from "./pages/Sobre";
+import Projecao from "./pages/Projecao";
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
         <Route path="/ia" element={<IA />} />
 
         <Route path="/sobre" element={<Sobre />} />
+
+        <Route path="/projecao" element={<Projecao />} />
 
       </Routes>
 

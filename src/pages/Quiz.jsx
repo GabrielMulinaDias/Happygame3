@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const dificuldades = {
   facil: {
@@ -29,6 +29,7 @@ function Quiz() {
   const [respostaSelecionada, setRespostaSelecionada] = useState(null);
   const [carregando, setCarregando] = useState(false);
   const [quizJaConcluido, setQuizJaConcluido] = useState(false);
+  const [liveMessage, setLiveMessage] = useState("");
 
   const perfilSalvo = localStorage.getItem("perfilHappyGame");
 
@@ -40,10 +41,6 @@ function Quiz() {
       };
 
   const usuarioId = perfil.id || "visitante";
-
-  useEffect(() => {
-    carregarPerguntas();
-  }, [tema, dificuldade, usuarioId]);
 
   function criarChaveStorage(nomeChave) {
     return `${nomeChave}_${usuarioId}`;
@@ -85,7 +82,7 @@ function Quiz() {
     return [...lista].sort(() => Math.random() - 0.5);
   }
 
-  async function carregarPerguntas() {
+  const carregarPerguntas = useCallback(async () => {
     setCarregando(true);
 
     try {
@@ -101,8 +98,10 @@ function Quiz() {
         quantidadePerguntasPorRodada
       );
 
-      const concluidos = obterQuizzesConcluidos();
-      const jaFoiConcluido = concluidos.includes(chaveQuizAtual());
+      // inline checks to avoid external function dependencies in useCallback
+      const dadosSalvos = localStorage.getItem(`quizzesConcluidosHappyGame_${usuarioId}`);
+      const concluidos = dadosSalvos ? JSON.parse(dadosSalvos) : [];
+      const jaFoiConcluido = concluidos.includes(`${tema}-${dificuldade}`);
 
       setPerguntas(perguntasAleatorias);
       setPerguntaAtual(0);
@@ -117,7 +116,15 @@ function Quiz() {
     } finally {
       setCarregando(false);
     }
-  }
+  }, [tema, dificuldade, usuarioId]);
+  useEffect(() => {
+    // avoid synchronous setState inside effect by deferring the call
+    const id = setTimeout(() => {
+      carregarPerguntas();
+    }, 0);
+
+    return () => clearTimeout(id);
+  }, [carregarPerguntas]);
 
   function iniciarQuiz() {
     if (quizJaConcluido) {
@@ -152,10 +159,19 @@ function Quiz() {
       setAcertos(novosAcertos);
     }
 
+    // announce result politely
+    if (acertou) {
+      setLiveMessage(`✓ Resposta correta. Pontuação: ${novaPontuacao} pontos.`);
+    } else {
+      setLiveMessage(`✕ Resposta incorreta. Pontuação: ${novaPontuacao} pontos.`);
+    }
+
     setTimeout(() => {
       if (perguntaAtual + 1 < perguntas.length) {
         setPerguntaAtual(perguntaAtual + 1);
         setRespostaSelecionada(null);
+        // clear live message for next question
+        setLiveMessage("");
       } else {
         finalizarQuiz(novaPontuacao, novosAcertos);
       }
@@ -215,6 +231,8 @@ function Quiz() {
     setPontuacao(pontosFinais);
     setAcertos(acertosFinais);
     setFinalizado(true);
+
+    setLiveMessage(`Quiz finalizado. Pontuação final: ${pontosFinais} pontos.`);
   }
 
   function mensagemFinal() {
@@ -279,7 +297,7 @@ function Quiz() {
                 <select
                   value={tema}
                   onChange={(e) => setTema(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-slate-700 text-white outline-none"
+                  className="w-full p-3 rounded-lg bg-slate-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   aria-label="Escolha o tema do quiz"
                 >
                   <option value="programacao">Tecnologia</option>
@@ -298,7 +316,7 @@ function Quiz() {
                 <select
                   value={dificuldade}
                   onChange={(e) => setDificuldade(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-slate-700 text-white outline-none"
+                  className="w-full p-3 rounded-lg bg-slate-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   aria-label="Escolha a dificuldade do quiz"
                 >
                   <option value="facil">Fácil - 10 pontos por acerto</option>
@@ -346,13 +364,18 @@ function Quiz() {
               <button
                 onClick={iniciarQuiz}
                 disabled={perguntas.length === 0 || quizJaConcluido}
-                className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-600 disabled:cursor-not-allowed py-3 rounded-xl font-bold"
+                className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-600 disabled:cursor-not-allowed py-3 rounded-xl font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               >
                 {quizJaConcluido ? "Quiz já concluído" : "Começar Quiz"}
               </button>
             )}
           </div>
         )}
+
+        {/* aria-live region for polite announcements (visually hidden) */}
+        <div aria-live="polite" className="sr-only" id="quiz-live">
+          {liveMessage}
+        </div>
 
         {quizIniciado && !finalizado && pergunta && (
           <div className="bg-slate-800 rounded-2xl p-8 mt-10 shadow-lg">
@@ -381,17 +404,18 @@ function Quiz() {
 
             <div className="space-y-4">
               {pergunta.respostas.map((resposta, indice) => {
-                let estilo =
-                  "w-full text-left p-4 rounded-xl bg-slate-700 hover:bg-slate-600 transition";
+                let estilo;
 
                 if (respostaSelecionada !== null) {
                   if (indice === pergunta.correta) {
-                    estilo =
-                      "w-full text-left p-4 rounded-xl bg-green-500 transition";
+                    estilo = "w-full text-left p-4 rounded-xl bg-green-500 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400";
                   } else if (indice === respostaSelecionada) {
-                    estilo =
-                      "w-full text-left p-4 rounded-xl bg-red-500 transition";
+                    estilo = "w-full text-left p-4 rounded-xl bg-red-500 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400";
+                  } else {
+                    estilo = "w-full text-left p-4 rounded-xl bg-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400";
                   }
+                } else {
+                  estilo = "w-full text-left p-4 rounded-xl bg-slate-700 hover:bg-slate-600 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400";
                 }
 
                 return (
@@ -401,7 +425,13 @@ function Quiz() {
                     className={estilo}
                     aria-label={`Resposta: ${resposta}`}
                   >
-                    {resposta}
+                    <span>{resposta}</span>
+                    {respostaSelecionada !== null && indice === pergunta.correta && (
+                      <span className="ml-3 font-semibold">✓ Resposta correta</span>
+                    )}
+                    {respostaSelecionada !== null && indice === respostaSelecionada && indice !== pergunta.correta && (
+                      <span className="ml-3 font-semibold">✕ Resposta incorreta</span>
+                    )}
                   </button>
                 );
               })}
