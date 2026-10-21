@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { lerPerfil } from "../lib/progresso";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const avatares = [
@@ -9,29 +10,11 @@ const avatares = [
 ];
 
 function Home() {
-  // Initialize profile state from localStorage synchronously (lazy init)
-  const inicialPerfil = (() => {
-    try {
-      const perfil = localStorage.getItem("perfilHappyGame");
-      if (!perfil) return null;
-      const perfilConvertido = JSON.parse(perfil);
-      return perfilConvertido;
-    } catch {
-      return null;
-    }
-  })();
+  const [inicialPerfil] = useState(() => lerPerfil());
 
   const [nome, setNome] = useState(inicialPerfil?.nome || "");
   const [avatarSelecionado, setAvatarSelecionado] = useState(inicialPerfil?.avatar || avatares[0]);
   const [perfilSalvo, setPerfilSalvo] = useState(inicialPerfil);
-
-  // if profile exists in storage but lacks an id, add it to localStorage (no state update)
-  useEffect(() => {
-    if (perfilSalvo && !perfilSalvo.id) {
-      const atualizado = { ...perfilSalvo, id: Date.now().toString() };
-      localStorage.setItem("perfilHappyGame", JSON.stringify(atualizado));
-    }
-  }, [perfilSalvo]);
 
   function salvarPerfil() {
     if (nome.trim() === "") {
@@ -40,18 +23,28 @@ function Home() {
     }
 
     const perfil = {
-      id: Date.now().toString(),
-      nome: nome,
+      id: crypto.randomUUID(),
+      nome: nome.trim(),
       avatar: avatarSelecionado,
       titulo: avatarSelecionado.nome,
     };
 
-    localStorage.setItem("perfilHappyGame", JSON.stringify(perfil));
+    try {
+      localStorage.setItem("perfilHappyGame", JSON.stringify(perfil));
+    } catch {
+      alert("Não foi possível salvar o perfil neste navegador.");
+      return;
+    }
     setPerfilSalvo(perfil);
   }
 
   function trocarPerfil() {
-    localStorage.removeItem("perfilHappyGame");
+    try {
+      localStorage.removeItem("perfilHappyGame");
+    } catch {
+      alert("Não foi possível trocar o perfil neste navegador.");
+      return;
+    }
     setPerfilSalvo(null);
     setNome("");
     setAvatarSelecionado(avatares[0]);

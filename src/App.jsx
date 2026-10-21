@@ -8,6 +8,7 @@ import Ranking from "./pages/Ranking";
 import IA from "./pages/IA";
 import Sobre from "./pages/Sobre";
 import Projecao from "./pages/Projecao";
+import Evolucao from "./pages/Evolucao";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/sobre" element={<Sobre />} />
 
         <Route path="/projecao" element={<Projecao />} />
+        <Route path="/evolucao" element={<Evolucao />} />
 
       </Routes>
 

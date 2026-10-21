@@ -1,38 +1,10 @@
+import { lerPerfil, lerProgresso, VISITANTE } from "../lib/progresso";
+import { nomeTema as formatarTema, nomeNivel as formatarDificuldade } from "../lib/catalogo";
 import { Link } from "react-router-dom";
 
 function Ranking() {
-  const perfilSalvo = localStorage.getItem("perfilHappyGame");
-
-  const perfil = perfilSalvo
-    ? JSON.parse(perfilSalvo)
-    : {
-        id: "visitante",
-        nome: "Jogador",
-        avatar: {
-          emoji: "🎮",
-          nome: "Visitante",
-        },
-        titulo: "Visitante",
-      };
-
-  const usuarioId = perfil.id || "visitante";
-
-  function criarChaveStorage(nomeChave) {
-    return `${nomeChave}_${usuarioId}`;
-  }
-
-  const pontuacaoTotal =
-    Number(localStorage.getItem(criarChaveStorage("pontuacaoTotalHappyGame"))) || 0;
-
-  const melhorPontuacaoQuiz =
-    Number(localStorage.getItem(criarChaveStorage("melhorPontuacao"))) || 0;
-
-  const ultimoQuizSalvo =
-    localStorage.getItem(criarChaveStorage("ultimoQuizHappyGame"));
-
-  const ultimoQuiz = ultimoQuizSalvo
-    ? JSON.parse(ultimoQuizSalvo)
-    : null;
+  const perfil = lerPerfil() || VISITANTE;
+  const { pontuacao: pontuacaoTotal, melhorPontuacao: melhorPontuacaoQuiz, ultimoQuiz } = lerProgresso(perfil.id);
 
   const pontosBoss = Math.max(2500, pontuacaoTotal + 500);
 
@@ -101,28 +73,6 @@ function Ranking() {
         {jogador.avatar}
       </span>
     );
-  }
-
-  function formatarTema(tema) {
-    const nomes = {
-      programacao: "Tecnologia",
-      futebol: "Futebol",
-      matematica: "Matemática",
-      historia: "História",
-      games: "Games",
-    };
-
-    return nomes[tema] || tema;
-  }
-
-  function formatarDificuldade(dificuldade) {
-    const nomes = {
-      facil: "Fácil",
-      medio: "Médio",
-      dificil: "Difícil",
-    };
-
-    return nomes[dificuldade] || dificuldade;
   }
 
   return (

@@ -1,25 +1,37 @@
-import { useEffect, useState, useCallback } from "react";
-
-const dificuldades = {
-  facil: {
-    nome: "Fácil",
-    pontos: 10,
-  },
-  medio: {
-    nome: "Médio",
-    pontos: 20,
-  },
-  dificil: {
-    nome: "Difícil",
-    pontos: 35,
-  },
-};
+import { useEffect, useState, useRef } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { selecionarDesafio } from "../lib/recomendacao";
+import { TEMAS, NIVEIS, dificuldades, nomeTema } from "../lib/catalogo";
+import { lerPerfil, lerProgresso, registrarResultado, VISITANTE } from "../lib/progresso";
 
 const quantidadePerguntasPorRodada = 3;
 
 function Quiz() {
-  const [tema, setTema] = useState("programacao");
-  const [dificuldade, setDificuldade] = useState("facil");
+  const [searchParams] = useSearchParams();
+  const perfil = lerPerfil() || VISITANTE;
+  if ((searchParams.has("tema") || searchParams.has("dificuldade")) &&
+      lerProgresso(perfil.id).concluidos.length === TEMAS.length * NIVEIS.length) {
+    return <main className="min-h-screen bg-slate-900 text-white px-6 py-12 text-center">
+      <h1 className="text-3xl font-bold text-cyan-400">Todos os desafios concluídos</h1>
+      <p className="mt-4">Você concluiu todos os desafios disponíveis. Parabéns!</p>
+      <Link className="inline-block mt-6 text-cyan-400 underline rounded focus-visible:ring-2 focus-visible:ring-cyan-400" to="/evolucao">Ver evolução</Link>
+    </main>;
+  }
+  return <RodadaQuiz key={`${perfil.id}:${searchParams.toString()}`} perfil={perfil} searchParams={searchParams} />;
+}
+
+function RodadaQuiz({ perfil, searchParams }) {
+  const usuarioId = perfil.id;
+  const [selecaoInicial] = useState(() => {
+    const { concluidos, ultimoQuiz } = lerProgresso(usuarioId);
+    if (!searchParams.has("tema") && !searchParams.has("dificuldade")) {
+      return { tema: "programacao", dificuldade: "facil" };
+    }
+    return selecionarDesafio(searchParams.get("tema"), searchParams.get("dificuldade"), concluidos, ultimoQuiz)
+      || { tema: "programacao", dificuldade: "facil" };
+  });
+  const [tema, setTema] = useState(selecaoInicial.tema);
+  const [dificuldade, setDificuldade] = useState(selecaoInicial.dificuldade);
   const [perguntas, setPerguntas] = useState([]);
   const [perguntaAtual, setPerguntaAtual] = useState(0);
   const [pontuacao, setPontuacao] = useState(0);
@@ -27,111 +39,56 @@ function Quiz() {
   const [quizIniciado, setQuizIniciado] = useState(false);
   const [finalizado, setFinalizado] = useState(false);
   const [respostaSelecionada, setRespostaSelecionada] = useState(null);
-  const [carregando, setCarregando] = useState(false);
-  const [quizJaConcluido, setQuizJaConcluido] = useState(false);
+  const [carregando, setCarregando] = useState(true);
+  const [erroCarga, setErroCarga] = useState("");
+  const [erroSalvar, setErroSalvar] = useState("");
+  const temporizador = useRef(null);
+  const respostaEmCurso = useRef(false);
+  const progressoSalvo = lerProgresso(usuarioId);
+  const quizJaConcluido = progressoSalvo.concluidos.includes(`${tema}-${dificuldade}`);
   const [liveMessage, setLiveMessage] = useState("");
 
-  const perfilSalvo = localStorage.getItem("perfilHappyGame");
-
-  const perfil = perfilSalvo
-    ? JSON.parse(perfilSalvo)
-    : {
-        id: "visitante",
-        nome: "Jogador",
-      };
-
-  const usuarioId = perfil.id || "visitante";
-
-  function criarChaveStorage(nomeChave) {
-    return `${nomeChave}_${usuarioId}`;
-  }
-
-  function chaveQuizAtual() {
-    return `${tema}-${dificuldade}`;
-  }
-
-  function obterQuizzesConcluidos() {
-    const dadosSalvos = localStorage.getItem(
-      criarChaveStorage("quizzesConcluidosHappyGame")
-    );
-
-    if (!dadosSalvos) {
-      return [];
-    }
-
-    return JSON.parse(dadosSalvos);
-  }
-
-  function marcarQuizComoConcluido() {
-    const concluidos = obterQuizzesConcluidos();
-    const chaveAtual = chaveQuizAtual();
-
-    if (!concluidos.includes(chaveAtual)) {
-      const novaLista = [...concluidos, chaveAtual];
-
-      localStorage.setItem(
-        criarChaveStorage("quizzesConcluidosHappyGame"),
-        JSON.stringify(novaLista)
-      );
-    }
-
-    setQuizJaConcluido(true);
-  }
-
-  function embaralharPerguntas(lista) {
-    return [...lista].sort(() => Math.random() - 0.5);
-  }
-
-  const carregarPerguntas = useCallback(async () => {
-    setCarregando(true);
-
-    try {
-      const resposta = await fetch(`/data/${tema}.json`);
-      const dados = await resposta.json();
-
-      const perguntasFiltradas = dados.filter(
-        (pergunta) => pergunta.dificuldade === dificuldade
-      );
-
-      const perguntasAleatorias = embaralharPerguntas(perguntasFiltradas).slice(
-        0,
-        quantidadePerguntasPorRodada
-      );
-
-      // inline checks to avoid external function dependencies in useCallback
-      const dadosSalvos = localStorage.getItem(`quizzesConcluidosHappyGame_${usuarioId}`);
-      const concluidos = dadosSalvos ? JSON.parse(dadosSalvos) : [];
-      const jaFoiConcluido = concluidos.includes(`${tema}-${dificuldade}`);
-
-      setPerguntas(perguntasAleatorias);
-      setPerguntaAtual(0);
-      setPontuacao(0);
-      setAcertos(0);
-      setQuizIniciado(false);
-      setFinalizado(false);
-      setRespostaSelecionada(null);
-      setQuizJaConcluido(jaFoiConcluido);
-    } catch (erro) {
-      console.error("Erro ao carregar perguntas:", erro);
-    } finally {
-      setCarregando(false);
-    }
-  }, [tema, dificuldade, usuarioId]);
   useEffect(() => {
-    // avoid synchronous setState inside effect by deferring the call
-    const id = setTimeout(() => {
-      carregarPerguntas();
-    }, 0);
+    const controller = new AbortController();
+    async function carregar() {
+      try {
+        const resposta = await fetch(`/data/${tema}.json`, { signal: controller.signal });
+        if (!resposta.ok) throw new Error("Falha ao buscar perguntas");
+        const dados = await resposta.json();
+        const filtradas = dados.filter((item) => item.dificuldade === dificuldade);
+        if (filtradas.length < quantidadePerguntasPorRodada) throw new Error("Perguntas insuficientes");
+        if (controller.signal.aborted) return;
+        setPerguntas([...filtradas].sort(() => Math.random() - 0.5).slice(0, quantidadePerguntasPorRodada));
+      } catch {
+        if (controller.signal.aborted) return;
+        setPerguntas([]);
+        setErroCarga("Não foi possível carregar as perguntas. Selecione outro desafio ou atualize a página.");
+      } finally {
+        if (!controller.signal.aborted) setCarregando(false);
+      }
+    }
+    carregar();
+    return () => controller.abort();
+  }, [tema, dificuldade]);
 
-    return () => clearTimeout(id);
-  }, [carregarPerguntas]);
+  useEffect(() => () => clearTimeout(temporizador.current), []);
+
+  function mudarSelecao(valor, definir) {
+    setPerguntas([]);
+    setCarregando(true);
+    setErroCarga("");
+    definir(valor);
+  }
 
   function iniciarQuiz() {
-    if (quizJaConcluido) {
+    if (lerProgresso(usuarioId).concluidos.includes(`${tema}-${dificuldade}`)) {
       alert("Você já concluiu esse tema nessa dificuldade.");
       return;
     }
 
+    if (carregando || perguntas.length === 0) return;
+    respostaEmCurso.current = false;
+    setErroSalvar("");
     setPerguntaAtual(0);
     setPontuacao(0);
     setAcertos(0);
@@ -141,10 +98,11 @@ function Quiz() {
   }
 
   function verificarResposta(indice) {
-    if (respostaSelecionada !== null) {
+    if (respostaEmCurso.current || respostaSelecionada !== null) {
       return;
     }
 
+    respostaEmCurso.current = true;
     setRespostaSelecionada(indice);
 
     const pergunta = perguntas[perguntaAtual];
@@ -166,8 +124,9 @@ function Quiz() {
       setLiveMessage(`✕ Resposta incorreta. Pontuação: ${novaPontuacao} pontos.`);
     }
 
-    setTimeout(() => {
+    temporizador.current = setTimeout(() => {
       if (perguntaAtual + 1 < perguntas.length) {
+        respostaEmCurso.current = false;
         setPerguntaAtual(perguntaAtual + 1);
         setRespostaSelecionada(null);
         // clear live message for next question
@@ -179,54 +138,14 @@ function Quiz() {
   }
 
   function finalizarQuiz(pontosFinais, acertosFinais) {
-    const concluidos = obterQuizzesConcluidos();
-    const chaveAtual = chaveQuizAtual();
-
-    if (!concluidos.includes(chaveAtual)) {
-      const pontuacaoTotalAtual =
-        Number(
-          localStorage.getItem(
-            criarChaveStorage("pontuacaoTotalHappyGame")
-          )
-        ) || 0;
-
-      const novaPontuacaoTotal = pontuacaoTotalAtual + pontosFinais;
-
-      localStorage.setItem(
-        criarChaveStorage("pontuacaoTotalHappyGame"),
-        novaPontuacaoTotal
-      );
-
-      const melhorPontuacaoQuiz =
-        Number(
-          localStorage.getItem(
-            criarChaveStorage("melhorPontuacao")
-          )
-        ) || 0;
-
-      if (pontosFinais > melhorPontuacaoQuiz) {
-        localStorage.setItem(
-          criarChaveStorage("melhorPontuacao"),
-          pontosFinais
-        );
-      }
-
-      marcarQuizComoConcluido();
+    try {
+      registrarResultado(usuarioId, {
+        tema, dificuldade, acertos: acertosFinais, totalPerguntas: perguntas.length,
+      });
+      setErroSalvar("");
+    } catch {
+      setErroSalvar("Não foi possível salvar o resultado. Libere espaço ou permita o armazenamento e tente novamente.");
     }
-
-    const resumo = {
-      tema,
-      dificuldade,
-      pontos: pontosFinais,
-      acertos: acertosFinais,
-      totalPerguntas: perguntas.length,
-      data: new Date().toLocaleDateString("pt-BR"),
-    };
-
-    localStorage.setItem(
-      criarChaveStorage("ultimoQuizHappyGame"),
-      JSON.stringify(resumo)
-    );
 
     setPontuacao(pontosFinais);
     setAcertos(acertosFinais);
@@ -249,18 +168,6 @@ function Quiz() {
     return "Continue tentando. Cada quiz ajuda na sua evolução.";
   }
 
-  function nomeTemaAtual() {
-    const nomes = {
-      programacao: "Tecnologia",
-      futebol: "Futebol",
-      matematica: "Matemática",
-      historia: "História",
-      games: "Games",
-    };
-
-    return nomes[tema];
-  }
-
   const progresso =
     quizIniciado && !finalizado && perguntas.length > 0
       ? ((perguntaAtual + 1) / perguntas.length) * 100
@@ -268,12 +175,7 @@ function Quiz() {
 
   const pergunta = perguntas[perguntaAtual];
 
-  const pontuacaoTotal =
-    Number(
-      localStorage.getItem(
-        criarChaveStorage("pontuacaoTotalHappyGame")
-      )
-    ) || 0;
+  const pontuacaoTotal = progressoSalvo.pontuacao;
 
   return (
     <div className="min-h-screen bg-slate-900 text-white px-6 py-10">
@@ -296,15 +198,11 @@ function Quiz() {
 
                 <select
                   value={tema}
-                  onChange={(e) => setTema(e.target.value)}
+                  onChange={(e) => mudarSelecao(e.target.value, setTema)}
                   className="w-full p-3 rounded-lg bg-slate-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   aria-label="Escolha o tema do quiz"
                 >
-                  <option value="programacao">Tecnologia</option>
-                  <option value="futebol">Futebol</option>
-                  <option value="matematica">Matemática</option>
-                  <option value="historia">História</option>
-                  <option value="games">Games</option>
+                  {TEMAS.map((item) => <option key={item.id} value={item.id}>{item.nome}</option>)}
                 </select>
               </div>
 
@@ -315,13 +213,11 @@ function Quiz() {
 
                 <select
                   value={dificuldade}
-                  onChange={(e) => setDificuldade(e.target.value)}
+                  onChange={(e) => mudarSelecao(e.target.value, setDificuldade)}
                   className="w-full p-3 rounded-lg bg-slate-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   aria-label="Escolha a dificuldade do quiz"
                 >
-                  <option value="facil">Fácil - 10 pontos por acerto</option>
-                  <option value="medio">Médio - 20 pontos por acerto</option>
-                  <option value="dificil">Difícil - 35 pontos por acerto</option>
+                  {NIVEIS.map((item) => <option key={item.id} value={item.id}>{item.nome} - {item.pontos} pontos por acerto</option>)}
                 </select>
               </div>
             </div>
@@ -345,7 +241,7 @@ function Quiz() {
             >
               {quizJaConcluido ? (
                 <p>
-                  {perfil.nome}, você já concluiu {nomeTemaAtual()} no nível{" "}
+                  {perfil.nome}, você já concluiu {nomeTema(tema)} no nível{" "}
                   {dificuldades[dificuldade].nome}. Escolha outro tema ou outra
                   dificuldade.
                 </p>
@@ -356,6 +252,7 @@ function Quiz() {
               )}
             </div>
 
+            {erroCarga && <p role="alert" className="text-yellow-300 mt-4">{erroCarga}</p>}
             {carregando ? (
               <p className="text-center mt-6 text-slate-300">
                 Carregando perguntas...
@@ -463,9 +360,18 @@ function Quiz() {
               {mensagemFinal()}
             </p>
 
-            <p className="text-cyan-400 font-bold mt-4">
-              Os pontos foram somados somente para o perfil de {perfil.nome}.
-            </p>
+            {erroSalvar ? (
+              <div role="alert" className="text-yellow-300 mt-4">
+                <p>{erroSalvar}</p>
+                <button className="underline mt-3 rounded focus-visible:ring-2 focus-visible:ring-cyan-400" onClick={() => finalizarQuiz(pontuacao, acertos)}>
+                  Tentar salvar novamente
+                </button>
+              </div>
+            ) : (
+              <p className="text-cyan-400 font-bold mt-4">
+                Os pontos foram somados somente para o perfil de {perfil.nome}.
+              </p>
+            )}
 
             <button
               onClick={() => {
@@ -477,6 +383,12 @@ function Quiz() {
             >
               Escolher outro quiz
             </button>
+            <Link
+              to="/evolucao"
+              className="block mt-6 text-cyan-400 underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            >
+              Ver evolução e próximo desafio recomendado
+            </Link>
           </div>
         )}
       </div>
