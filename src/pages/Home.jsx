@@ -1,4 +1,4 @@
-import { lerPerfil } from "../lib/progresso";
+import { lerPerfil, nomeValido } from "../lib/progresso";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -17,8 +17,8 @@ function Home() {
   const [perfilSalvo, setPerfilSalvo] = useState(inicialPerfil);
 
   function salvarPerfil() {
-    if (nome.trim() === "") {
-      alert("Digite seu nome para continuar.");
+    if (!nomeValido(nome)) {
+      alert("Informe um nome de até 40 caracteres.");
       return;
     }
 
@@ -65,16 +65,12 @@ function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-10">
-              <Link to="/quiz">
-                <button className="bg-cyan-500 hover:bg-cyan-600 px-8 py-4 rounded-xl text-lg font-semibold w-full sm:w-auto">
-                  Começar Quiz
-                </button>
+              <Link to="/quiz" className="inline-block text-center bg-cyan-500 hover:bg-cyan-600 px-8 py-4 rounded-xl text-lg font-semibold w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-white">
+                Começar Quiz
               </Link>
 
-              <Link to="/ranking">
-                <button className="bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-xl text-lg font-semibold w-full sm:w-auto">
-                  Ver Ranking
-                </button>
+              <Link to="/ranking" className="inline-block text-center bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-xl text-lg font-semibold w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-white">
+                Ver Ranking
               </Link>
             </div>
           </div>
@@ -87,16 +83,19 @@ function Home() {
                 </h3>
 
                 <p className="text-slate-300 text-center mt-3">
-                  Escolha como você quer aparecer no ranking.
+                  Use um apelido, sem nome completo ou dados pessoais. Seu perfil fica somente neste navegador.
                 </p>
 
                 <div className="mt-6">
-                  <label className="block mb-2 font-semibold">
+                  <label htmlFor="nome-jogador" className="block mb-2 font-semibold">
                     Nome do jogador
                   </label>
 
                   <input
+                    id="nome-jogador"
                     type="text"
+                    maxLength={40}
+                    autoComplete="nickname"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     placeholder="Digite seu nome"
@@ -121,6 +120,7 @@ function Home() {
                             : "border-slate-600 bg-slate-700 hover:bg-slate-600"
                         }`}
                         aria-label={`Selecionar avatar ${avatar.nome}`}
+                        aria-pressed={avatarSelecionado.id === avatar.id}
                       >
                         <div className="text-4xl">
                           {avatar.emoji}
@@ -161,10 +161,8 @@ function Home() {
                   </p>
                 </div>
 
-                <Link to="/quiz">
-                  <button className="w-full mt-8 bg-cyan-500 hover:bg-cyan-600 py-3 rounded-xl font-bold">
-                    Jogar Agora
-                  </button>
+                <Link to="/quiz" className="block text-center w-full mt-8 bg-cyan-500 hover:bg-cyan-600 py-3 rounded-xl font-bold focus-visible:ring-2 focus-visible:ring-white">
+                  Jogar Agora
                 </Link>
 
                 <button

@@ -1,5 +1,22 @@
 # Auditoria de segurança das dependências — Fase 6
 
+## Atualização — Atividade 5, 03/11/2026
+
+Auditoria online executada novamente. O registro histórico abaixo não representa o estado atual.
+
+| Escopo | Antes desta integração | Após atualização compatível |
+| --- | --- | --- |
+| Completo | 7 entradas: 6 moderadas e 1 alta | 6 moderadas |
+| Sem desenvolvimento | Não aferido antes da atualização | 0 |
+
+`npm audit fix` sem `--force` atualizou dependências nas faixas permitidas. Zod passou para 4.6.7, corrigindo [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5), consumo excessivo de memória. É dependência da ferramenta de lint, não de uma API do aplicativo.
+
+Permanece [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249): minimatch 10.2.6, amplificação de padrões glob, corrigida a partir de 11.0.1. As seis entradas são minimatch, @eslint/config-array, eslint, @eslint-community/eslint-utils, @eslint/js e eslint-plugin-react-refresh. O npm não oferece correção compatível dessa cadeia. Não foi forçada substituição major; acompanhar atualização upstream e não executar lint com configurações glob não confiáveis. O aplicativo não recebe padrões glob do jogador.
+
+O audit completo retorna código 1 por essa pendência; não está aprovado sem ressalvas. `npm audit --omit=dev` retorna código 0. A CI verifica produção com limiar high. Consultas iniciais falharam pela restrição de rede e foram repetidas com acesso autorizado ao registry. Playwright foi acrescentado para testes de navegador.
+
+## Registro histórico da Fase 6
+
 Projeto: `Happygame3-fase6`. Esta auditoria substitui a pendência de 9 vulnerabilidades relatada na preparação do clone.
 
 ## Resultado

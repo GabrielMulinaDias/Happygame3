@@ -1,0 +1,36 @@
+name: Validacao Happy Game
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Verificar lint
+        run: npm run lint
+      - name: Gerar build
+        run: npm run build
+      - name: Executar testes
+        run: node --test
+      - name: Instalar navegador de teste
+        run: npx playwright install --with-deps chromium
+      - name: Validar fluxos no navegador
+        run: npm run test:e2e
+        env:
+          PW_CHANNEL: chromium
+      - name: Auditar dependencias de producao
+        run: npm audit --omit=dev --audit-level=high

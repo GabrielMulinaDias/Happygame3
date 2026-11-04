@@ -84,7 +84,7 @@ function Ranking() {
           </h1>
 
           <p className="text-slate-300 mt-4">
-            Some pontos em diferentes quizzes e tente chegar à segunda colocação.
+            Ranking demonstrativo local: Lua, Rafa, Bia e o chefe são personagens fictícios. Some pontos e tente chegar à segunda colocação.
           </p>
         </div>
 
@@ -198,10 +198,8 @@ function Ranking() {
         </div>
 
         <div className="text-center mt-10">
-          <Link to="/quiz">
-            <button className="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-xl font-bold">
+          <Link to="/quiz" className="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-xl font-bold">
               Jogar Quiz
-            </button>
           </Link>
         </div>
       </div>
