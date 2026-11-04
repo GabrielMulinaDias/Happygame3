@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 
@@ -18,6 +18,7 @@ function App() {
 
       <Routes>
 
+        <Route path="*" element={<main className="min-h-screen bg-slate-900 text-white p-10 text-center"><h1 className="text-3xl font-bold">Página não encontrada</h1><Link className="inline-block mt-6 text-cyan-400 underline" to="/">Voltar ao início</Link></main>} />
         <Route path="/" element={<Home />} />
 
         <Route path="/quiz" element={<Quiz />} />

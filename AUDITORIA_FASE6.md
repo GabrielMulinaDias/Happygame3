@@ -1,5 +1,7 @@
 # Auditoria da Fase 6
 
+> Registro histórico anterior à integração da Atividade 5. Resultados atuais estão em `docs/EVIDENCIAS_TESTES.md` e `AUDITORIA_DEPENDENCIAS.md`; as contagens abaixo não são a auditoria atual.
+
 ## Achados e correções
 
 | Achado | Causa identificada | Correção |

@@ -4,6 +4,8 @@ import { selecionarDesafio } from "../lib/recomendacao";
 import { TEMAS, NIVEIS, dificuldades, nomeTema } from "../lib/catalogo";
 import { lerPerfil, lerProgresso, registrarResultado, VISITANTE } from "../lib/progresso";
 
+import { selecionarPerguntas } from "../lib/perguntas";
+
 const quantidadePerguntasPorRodada = 3;
 
 function Quiz() {
@@ -55,10 +57,9 @@ function RodadaQuiz({ perfil, searchParams }) {
         const resposta = await fetch(`/data/${tema}.json`, { signal: controller.signal });
         if (!resposta.ok) throw new Error("Falha ao buscar perguntas");
         const dados = await resposta.json();
-        const filtradas = dados.filter((item) => item.dificuldade === dificuldade);
-        if (filtradas.length < quantidadePerguntasPorRodada) throw new Error("Perguntas insuficientes");
+        const selecionadas = selecionarPerguntas(dados, dificuldade, quantidadePerguntasPorRodada);
         if (controller.signal.aborted) return;
-        setPerguntas([...filtradas].sort(() => Math.random() - 0.5).slice(0, quantidadePerguntasPorRodada));
+        setPerguntas(selecionadas);
       } catch {
         if (controller.signal.aborted) return;
         setPerguntas([]);
@@ -73,7 +74,8 @@ function RodadaQuiz({ perfil, searchParams }) {
 
   useEffect(() => () => clearTimeout(temporizador.current), []);
 
-  function mudarSelecao(valor, definir) {
+  function mudarSelecao(valor, atual, definir) {
+    if (valor === atual) return;
     setPerguntas([]);
     setCarregando(true);
     setErroCarga("");
@@ -192,13 +194,14 @@ function RodadaQuiz({ perfil, searchParams }) {
           <div className="bg-slate-800 rounded-2xl p-8 mt-10 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-3 font-semibold">
+                <label htmlFor="tema-quiz" className="block mb-3 font-semibold">
                   Escolha o tipo de quiz:
                 </label>
 
                 <select
+                  id="tema-quiz"
                   value={tema}
-                  onChange={(e) => mudarSelecao(e.target.value, setTema)}
+                  onChange={(e) => mudarSelecao(e.target.value, tema, setTema)}
                   className="w-full p-3 rounded-lg bg-slate-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   aria-label="Escolha o tema do quiz"
                 >
@@ -207,13 +210,14 @@ function RodadaQuiz({ perfil, searchParams }) {
               </div>
 
               <div>
-                <label className="block mb-3 font-semibold">
+                <label htmlFor="dificuldade-quiz" className="block mb-3 font-semibold">
                   Escolha a dificuldade:
                 </label>
 
                 <select
+                  id="dificuldade-quiz"
                   value={dificuldade}
-                  onChange={(e) => mudarSelecao(e.target.value, setDificuldade)}
+                  onChange={(e) => mudarSelecao(e.target.value, dificuldade, setDificuldade)}
                   className="w-full p-3 rounded-lg bg-slate-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                   aria-label="Escolha a dificuldade do quiz"
                 >
@@ -319,6 +323,7 @@ function RodadaQuiz({ perfil, searchParams }) {
                   <button
                     key={indice}
                     onClick={() => verificarResposta(indice)}
+                    disabled={respostaSelecionada !== null}
                     className={estilo}
                     aria-label={`Resposta: ${resposta}`}
                   >

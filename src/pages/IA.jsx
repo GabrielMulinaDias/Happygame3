@@ -18,6 +18,10 @@ function IA() {
 
         </section>
 
+        <section className="bg-slate-800 rounded-3xl p-8 mt-10">
+          <h2 className="text-3xl font-bold text-cyan-400">O que funciona hoje</h2>
+          <p className="text-slate-300 mt-4">A página Evolução recomenda desafios por regras fixas de desempenho e progresso local. As perguntas vêm de arquivos revisados do projeto. Não há IA generativa, chatbot, backend de IA nem envio do histórico a um provedor externo.</p>
+        </section>
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-14">
 
           <div className="bg-slate-800 rounded-3xl p-8 shadow-xl">

@@ -18,17 +18,21 @@ export function lerJSON(chave, padrao, storage = armazenamento()) {
   }
 }
 
+export function nomeValido(nome) {
+  return typeof nome === "string" && nome.trim().length > 0 && nome.trim().length <= 40;
+}
+
 export function lerPerfil(storage = armazenamento()) {
   const perfil = lerJSON("perfilHappyGame", null, storage);
-  if (!perfil || typeof perfil.nome !== "string" || !perfil.nome.trim()) return null;
+  if (!perfil || !nomeValido(perfil.nome)) return null;
   // Perfis antigos sem ID já usavam o namespace visitante; não troque sua identidade na leitura.
-  const id = (typeof perfil.id === "string" && perfil.id.trim()) ||
+  const id = (typeof perfil.id === "string" && /^[a-zA-Z0-9_-]{1,80}$/.test(perfil.id) && perfil.id) ||
     (Number.isSafeInteger(perfil.id) ? String(perfil.id) : "visitante");
   return {
-    id, nome: perfil.nome,
-    titulo: typeof perfil.titulo === "string" ? perfil.titulo : "Jogador",
-    avatar: perfil.avatar && typeof perfil.avatar.emoji === "string" && typeof perfil.avatar.nome === "string"
-      ? perfil.avatar : VISITANTE.avatar,
+    id, nome: perfil.nome.trim(),
+    titulo: typeof perfil.titulo === "string" && perfil.titulo.length <= 80 ? perfil.titulo : "Jogador",
+    avatar: perfil.avatar && typeof perfil.avatar.emoji === "string" && typeof perfil.avatar.nome === "string" && perfil.avatar.nome.length <= 80 && perfil.avatar.emoji.length <= 16
+      ? { id: Number.isSafeInteger(perfil.avatar.id) ? perfil.avatar.id : 0, nome: perfil.avatar.nome, emoji: perfil.avatar.emoji } : VISITANTE.avatar,
   };
 }
 
